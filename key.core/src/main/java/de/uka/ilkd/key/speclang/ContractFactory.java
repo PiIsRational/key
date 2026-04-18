@@ -344,6 +344,8 @@ public class ContractFactory {
             LocationVariable selfVar,
             ImmutableList<LocationVariable> paramVars, LocationVariable resultVar) {
 
+        if (pm.isStatic()) return;
+
         var heap = services.getTypeConverter().getHeapLDT().getHeap();
         final TermBuilder tb = services.getTermBuilder();
         final var owner = services.getNamespaces().functions().lookup("owner");
@@ -409,6 +411,7 @@ public class ContractFactory {
                         tb.not(tb.equals(tb.var(paramVars.get(i)), tb.NULL())),
                         tb.func(dominates, tb.var(resultVar), tb.var(selfVar))));
                 } else if (name.equals("Peer")) {
+                    LOGGER.info("res {}, slef {}", resultVar, selfVar);
                     change = true;
                     posts = tb.and(posts, 
                             tb.imp(
