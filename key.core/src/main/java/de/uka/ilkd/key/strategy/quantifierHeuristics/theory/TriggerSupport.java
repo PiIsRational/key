@@ -30,31 +30,52 @@ import org.key_project.util.collection.ImmutableSet;
 public interface TriggerSupport {
 
     /**
-     * Whether {@code candidate} must not be used as a standalone trigger, because for this theory
-     * it is an array index or a connective rather than a read.
+     * The verdict of a theory on a trigger candidate: whether the candidate becomes a trigger,
+     * and whether the search for triggers continues with the term enclosing it.
      *
-     * @param candidate a subterm that contains the quantified variables and is a trigger candidate
-     * @param services access to the theory operators
+     * Trigger selection traverses each literal of the quantified formula bottom-up. A candidate
+     * is a subterm that contains a quantified variable and is not a variable itself. For every
+     * candidate the verdict of every theory is determined, and the verdicts are combined as
+     * follows: one {@code FORBIDDEN} discards the candidate; otherwise one
+     * {@code PREFER_ENCLOSING} registers the candidate as a trigger and continues the search
+     * with the enclosing term; otherwise the candidate is registered as a trigger, and an
+     * enclosing term becomes a candidate only if it contains a quantified variable that the
+     * registered trigger does not.
      */
-    boolean rejectsAsTrigger(JTerm candidate, Services services);
+    enum CandidateVerdict {
+        /**
+         * The candidate may become a trigger. If every theory returns {@code ACCEPTABLE}, the
+         * candidate is registered, and no enclosing term becomes a trigger for the variables
+         * the candidate binds.
+         */
+        ACCEPTABLE,
+        /**
+         * The candidate is not a trigger, because a match of it discriminates nothing: an
+         * equality or a comparison {@code <=}, {@code >=} matches every literal of its shape,
+         * and the index packaging {@code arr(i)} of an array access matches every access. The
+         * search continues with the enclosing term. Where every subterm of a term is forbidden,
+         * the term itself is the candidate.
+         */
+        FORBIDDEN,
+        /**
+         * The candidate is a trigger, and the term enclosing it is a candidate as well. The
+         * index {@code k + t} of an array access {@code a[k + t]} is such a case. The sum binds
+         * {@code t} but does not determine the array. The read determines the array, so both
+         * are registered.
+         */
+        PREFER_ENCLOSING
+    }
 
     /**
-     * Whether a candidate should give way to the term enclosing it, when that term yields a
-     * trigger of its own.
+     * Returns this theory's verdict on a trigger candidate. The combination of the verdicts of
+     * all theories is described at {@link CandidateVerdict}.
      *
-     * Unlike {@link #rejectsAsTrigger}, this is a preference and not a veto. An array index
-     * matches every integer term on the sequent, while the read around it says which access is
-     * meant. Where no enclosing term yields a trigger the candidate is used anyway, since a
-     * clause without a trigger is never instantiated.
-     *
-     * @param candidate a trigger candidate
+     * @param candidate a subterm that contains the quantified variables and is a trigger candidate
      * @param enclosing the term the candidate is an argument of, null at the top of a literal
-     * @param services access to the theory's operators
-     * @return whether an enclosing trigger is preferable to this candidate
+     * @param services access to the theory operators
+     * @return the verdict
      */
-    default boolean prefersEnclosingTrigger(JTerm candidate, JTerm enclosing, Services services) {
-        return false;
-    }
+    CandidateVerdict verdictOn(JTerm candidate, JTerm enclosing, Services services);
 
     /**
      * Additional triggers derived from the accepted trigger {@code term}, for example a read
