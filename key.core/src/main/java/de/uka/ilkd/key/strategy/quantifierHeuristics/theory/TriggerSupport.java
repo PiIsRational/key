@@ -18,7 +18,8 @@ import org.key_project.util.collection.ImmutableSet;
  * A theory's contribution to the choice of what a quantified formula is instantiated with.
  *
  * Which subterms make a usable trigger depends on the theory a term belongs to: an array index or
- * an integer comparison matches everywhere and says nothing, a read says which access is meant.
+ * an integer comparison matches everywhere and discriminates nothing, while a read determines
+ * which location is accessed.
  * A theory also derives further triggers from an accepted one, for example a read generalized so
  * it matches over the many heaps of a proof, and it names instances that no trigger reaches at
  * all.
@@ -101,7 +102,8 @@ public interface TriggerSupport {
      *
      * A returned trigger is registered as theory-provided: it is unified, and under the most
      * informed treatment also matched structurally, so a metavariable in it can bind a term the
-     * formula never named and a theory can solve an index below it. Instances it yields carry
+     * that does not occur in the formula, and a theory can solve an index below it. Instances it
+     * yields carry
      * the {@code FALLBACK} origin, which only the most informed treatment admits. A fallback
      * that covers only part of the clause's variables joins no multi-trigger cover; the covers
      * are built before the fallbacks are asked for.
