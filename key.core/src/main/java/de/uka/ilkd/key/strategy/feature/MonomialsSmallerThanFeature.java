@@ -27,7 +27,15 @@ import org.key_project.util.collection.ImmutableList;
 
 /**
  * Feature that returns zero iff each monomial of one polynomial is smaller than all monomials of a
- * second polynomial
+ * second polynomial.
+ *
+ * <p>
+ * {@link StableCost}: the monomial ordering is determined by the compared instantiation terms alone
+ * -- multiplication degree, atom counts, the term-only
+ * {@link de.uka.ilkd.key.logic.LexPathOrdering}, and the introduction time of basis symbols, which
+ * is a constant for every operator a cost evaluation can encounter (the argument is given at
+ * {@link AbstractMonomialSmallerThanFeature#introductionTime}).
+ * </p>
  */
 @StableCost
 public class MonomialsSmallerThanFeature extends AbstractMonomialSmallerThanFeature {
@@ -95,7 +103,7 @@ public class MonomialsSmallerThanFeature extends AbstractMonomialSmallerThanFeat
             // transformation; such symbols are smaller than other symbols (and
             // the smaller the later they were introduced)
 
-            final int v = introductionTime(t2.op(), goal) - introductionTime(t1.op(), goal);
+            final int v = introductionTime(t2.op()) - introductionTime(t1.op());
             if (v < 0) {
                 return true;
             }
@@ -133,7 +141,7 @@ public class MonomialsSmallerThanFeature extends AbstractMonomialSmallerThanFeat
             atoms1 = atoms1.tail();
             atoms2 = atoms2.tail();
 
-            final int c = introductionTime(t2.op(), goal) - introductionTime(t1.op(), goal);
+            final int c = introductionTime(t2.op()) - introductionTime(t1.op());
             if (c != 0) {
                 return c;
             }

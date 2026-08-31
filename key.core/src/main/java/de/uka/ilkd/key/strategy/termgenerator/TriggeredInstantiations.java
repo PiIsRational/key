@@ -5,6 +5,7 @@ package de.uka.ilkd.key.strategy.termgenerator;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import de.uka.ilkd.key.java.Services;
@@ -88,8 +89,8 @@ public class TriggeredInstantiations implements TermGenerator<Goal> {
             final Sequent seq = goal.sequent();
             final CandidateCache cached = candidateCache.get();
             if (seq != cached.last()) {
-                terms = new HashSet<>();
-                axiomSet = new HashSet<>();
+                terms = new LinkedHashSet<>();
+                axiomSet = new LinkedHashSet<>();
                 computeAxiomAndCandidateSets(seq, terms, axiomSet, services);
                 for (JTerm axiom : axiomSet) {
                     axioms = axioms.add(axiom);
@@ -170,14 +171,11 @@ public class TriggeredInstantiations implements TermGenerator<Goal> {
         }
     }
 
-    private boolean isAvoidConditionProvable(JTerm cond, ImmutableSet<JTerm> axioms,
-            Services services) {
-
+    private boolean isAvoidConditionProvable(JTerm cond,
+            PredictCostProver.PreparedAxioms axioms, Services services) {
         long cost = PredictCostProver.computerInstanceCost(
             new Substitution(DefaultImmutableMap.nilMap()), cond,
             axioms, services);
-
-
         return cost == -1;
     }
 
@@ -187,8 +185,12 @@ public class TriggeredInstantiations implements TermGenerator<Goal> {
             ImmutableSet<JTerm> axioms,
             TacletApp app) {
 
-        final HashSet<org.key_project.logic.Term> instances = new HashSet<>();
+        final LinkedHashSet<org.key_project.logic.Term> instances = new LinkedHashSet<>();
         final HashSet<JTerm> alreadyChecked = new HashSet<>();
+        // The axioms are fixed for the sequent, so the congruence and the normalization are
+        // built once here instead of once per avoid condition per candidate.
+        final PredictCostProver.PreparedAxioms prepared =
+            PredictCostProver.prepare(axioms, services);
 
         for (final JTerm t : terms) {
             boolean addToInstances = true;
@@ -201,7 +203,7 @@ public class TriggeredInstantiations implements TermGenerator<Goal> {
                         ImmutableList<JTerm> conditions =
                             instantiateConditions(services, app, middle);
                         for (JTerm condition : conditions) {
-                            if (isAvoidConditionProvable(condition, axioms, services)) {
+                            if (isAvoidConditionProvable(condition, prepared, services)) {
                                 addToInstances = false;
                                 break;
                             }

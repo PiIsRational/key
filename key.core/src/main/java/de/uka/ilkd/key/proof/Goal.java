@@ -257,7 +257,8 @@ public final class Goal implements ProofGoal<Goal> {
         PERF_UPDATE_TAG_MANAGER.getAndAdd(time1 - time);
         ruleAppIndex.sequentChanged(sci);
         // Feed the change to the (possibly delegation-wrapped) queue manager so it can wake parked
-        // assumes-bases on their matching round (see QueueRuleApplicationManager#parkedByOp).
+        // assumes-bases on their matching round (see the parked field of
+        // QueueRuleApplicationManager).
         RuleApplicationManager<Goal> m = ruleAppManager;
         while (m instanceof DelegationBasedRuleApplicationManager<Goal> d) {
             m = d.getDelegate();
@@ -701,7 +702,10 @@ public final class Goal implements ProofGoal<Goal> {
      * @param ruleApp the rule application to perform
      * @return the pending application to be committed, or {@code null} if the rule aborted
      */
-    public @Nullable PendingRuleApp computeRuleApp(final RuleApp ruleApp) {
+    public @Nullable PendingRuleApp computeRuleApp(final RuleApp p_ruleApp) {
+        final RuleApp ruleApp = p_ruleApp instanceof TacletApp tacletApp
+                ? tacletApp.createSkolemConstants(this)
+                : p_ruleApp;
         final Proof proof = proof();
 
         final NodeChangeJournal journal = new NodeChangeJournal(proof, this);

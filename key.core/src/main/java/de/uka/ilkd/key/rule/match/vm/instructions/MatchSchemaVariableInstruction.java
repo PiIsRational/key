@@ -59,8 +59,13 @@ public abstract class MatchSchemaVariableInstruction implements MatchInstruction
         final MatchConditions matchCond = (MatchConditions) matchResultInfo;
         final SVInstantiations inst = matchCond.getInstantiations();
 
-        final JTerm t = inst.getTermInstantiation(op, inst.getExecutionContext(), services);
+        final JTerm t = inst.getTermInstantiation(op, services);
         if (t != null) {
+            // An already instantiated schema variable accepts a candidate exactly when it is
+            // equal to the instantiation modulo renaming. The proof-search queue relies on this:
+            // it indexes waiting rule applications by hashCodeModRenaming of the instantiation
+            // (QueueRuleApplicationManager), and that hash is only a safe filter as long as the
+            // comparison here is not more liberal than equality modulo renaming.
             if (!RENAMING_TERM_PROPERTY.equalsModThisProperty(t, term)) {
                 return null;
             } else {

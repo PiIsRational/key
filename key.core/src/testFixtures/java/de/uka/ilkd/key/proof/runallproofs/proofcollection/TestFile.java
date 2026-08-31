@@ -191,7 +191,8 @@ public class TestFile implements Serializable {
                     }
                 }
 
-                assertFalse(replayResult.hasErrors(), "Loading problem file failed");
+                assertFalse(replayResult.hasErrors(),
+                    "Loading problem file " + keyFile + " failed");
 
                 // For a reload test we are done at this point. Loading was successful.
                 if (testProperty == TestProperty.LOADABLE) {
@@ -256,6 +257,7 @@ public class TestFile implements Serializable {
         if (settings.reloadEnabled() && (testProperty == TestProperty.PROVABLE) && success) {
             // Save the available proof to a temporary file.
             ProofSaver.saveToFile(proofFile, loadedProof);
+            loadedProof.dispose();
             reloadProof(proofFile);
             if (verbose) {
                 LOGGER.debug("... success: reloaded.");

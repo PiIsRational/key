@@ -176,7 +176,7 @@ public class ApplyScriptsMacro extends AbstractProofMacro {
         Term appliedOn = ruleApp.posInOccurrence().subTerm();
         if (appliedOn.op() instanceof UpdateApplication) {
             var update = UpdateApplication.getUpdate((JTerm) appliedOn);
-            Map<JTerm, JTerm> updates = new HashMap<>();
+            Map<JTerm, JTerm> updates = new LinkedHashMap<>();
             Services services = goal.proof().getServices();
             collectUpdates(update, updates, services);
             return new OpReplacer(updates, services.getTermFactory());
@@ -261,14 +261,14 @@ public class ApplyScriptsMacro extends AbstractProofMacro {
         }
         listener.taskStarted(new DefaultTaskStartedInfo(TaskStartedInfo.TaskKind.Other,
             "Running fallback macro on the remaining goals", 0));
-        for (Goal goal : laterGoals) {
-            if (Thread.interrupted()) {
-                throw new InterruptedException();
-            }
-            if (fallBackMacro != null) {
-                fallBackMacro.applyTo(uic, proof, ImmutableList.of(goal), posInOcc, listener);
-            }
 
+        if (Thread.interrupted()) {
+            throw new InterruptedException();
+        }
+
+        if (fallBackMacro != null && !laterGoals.isEmpty()) {
+            fallBackMacro.applyTo(uic, proof, ImmutableList.fromList(laterGoals), posInOcc,
+                listener);
         }
 
         return new ProofMacroFinishedInfo(this, proof);
@@ -311,7 +311,7 @@ public class ApplyScriptsMacro extends AbstractProofMacro {
 
     private Map<LocationVariable, JFunction> makeObtainVarMap(
             ImmutableList<LocationVariable> locationVariables) {
-        HashMap<LocationVariable, JFunction> result = new HashMap<>();
+        HashMap<LocationVariable, JFunction> result = new LinkedHashMap<>();
         for (LocationVariable lv : locationVariables) {
             result.put(lv, null);
         }
