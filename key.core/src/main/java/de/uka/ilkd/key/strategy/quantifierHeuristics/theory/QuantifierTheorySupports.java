@@ -19,8 +19,8 @@ public final class QuantifierTheorySupports {
 
     /** Everything the heuristic knows about the terms of the Java front end. */
     public static final List<QuantifierTheorySupport> JAVA_DL =
-        List.of(new HeapArrayTheorySupport(), new EqualityTheorySupport(),
-            new IntegerTheorySupport());
+        List.of(new HeapArrayTheorySupport(), new SequenceTheorySupport(),
+            new EqualityTheorySupport(), new IntegerTheorySupport());
 
     /**
      * The classic trigger selection: equality and integer rejection only, without the knowledge

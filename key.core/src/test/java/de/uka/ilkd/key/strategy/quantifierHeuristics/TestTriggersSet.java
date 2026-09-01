@@ -6,9 +6,11 @@ package de.uka.ilkd.key.strategy.quantifierHeuristics;
 import java.util.HashSet;
 import java.util.Set;
 
+import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.ldt.JavaDLTheory;
 import de.uka.ilkd.key.logic.*;
 import de.uka.ilkd.key.logic.op.JFunction;
+import de.uka.ilkd.key.logic.op.LogicVariable;
 import de.uka.ilkd.key.logic.sort.SortImpl;
 import de.uka.ilkd.key.proof.*;
 import de.uka.ilkd.key.proof.calculus.JavaDLSequentKit;
@@ -378,6 +380,30 @@ public class TestTriggersSet {
             TriggersSet.create(all, proof.getServices()).getAllTriggers();
         assertEquals(1, triggers.size());
         assertEquals(all.sub(0).sub(0).sub(0), triggers.iterator().next().getTriggerTerm()); // f2rr(x)
+    }
+
+    @Test
+    public void sequenceReadWithCompoundIndexIsRegisteredWithItsIndex() {
+        // forall int t. seqGet<int>(b, k + t) = seqGet<int>(a, m + t): the triggers are the two
+        // sums and the two reads around them, see SequenceTheorySupport.
+        final Services services = proof.getServices();
+        final TermBuilder tb = services.getTermBuilder();
+        final Sort intSort = services.getTypeConverter().getIntegerLDT().targetSort();
+        final Sort seqSort = services.getTypeConverter().getSeqLDT().targetSort();
+        final JTerm a = tb.func(new JFunction(new Name("seq_a"), seqSort, new Sort[0]));
+        final JTerm b = tb.func(new JFunction(new Name("seq_b"), seqSort, new Sort[0]));
+        final JTerm k = tb.func(new JFunction(new Name("int_k"), intSort, new Sort[0]));
+        final JTerm m = tb.func(new JFunction(new Name("int_m"), intSort, new Sort[0]));
+        final LogicVariable t = new LogicVariable(new Name("t"), intSort);
+        final JTerm readB = tb.seqGet(intSort, b, tb.add(k, tb.var(t)));
+        final JTerm readA = tb.seqGet(intSort, a, tb.add(m, tb.var(t)));
+        final JTerm all = tb.all(t, tb.equals(readB, readA));
+        final Set<Term> expected = Set.of(readB.sub(1), readB, readA.sub(1), readA);
+        final Set<Term> actual = new HashSet<>();
+        for (final Trigger trigger : TriggersSet.create(all, services).getAllTriggers()) {
+            actual.add(trigger.getTriggerTerm());
+        }
+        assertEquals(expected, actual);
     }
 
     @Test
