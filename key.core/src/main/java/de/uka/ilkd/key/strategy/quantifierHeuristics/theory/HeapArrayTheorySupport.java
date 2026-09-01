@@ -14,17 +14,18 @@ import de.uka.ilkd.key.logic.sort.ArraySort;
 import de.uka.ilkd.key.strategy.quantifierHeuristics.TriggerUtils;
 
 import org.key_project.logic.op.QuantifiableVariable;
-import org.key_project.logic.sort.Sort;
+import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableSet;
 
 /**
  * Support for the heap theory and array reads.
  *
  * Forbids the index packaging {@code arr(...)} and reads of the implicit {@code $created}
- * field as triggers, provides array-read triggers generalized over the heap so that a read
- * written for one heap in a quantified formula matches the reads a proof produces over its many
- * other heaps, and supplies the indices a formula writes as candidate instances for the index
- * it reads.
+ * field as triggers, derives from every accepted trigger a variant whose reads of the quantified
+ * variables match over any heap, so that a read written for one heap in a quantified formula
+ * matches the reads a proof produces over its many other heaps, and supplies the indices a formula
+ * writes as candidate
+ * instances for the index it reads.
  */
 final class HeapArrayTheorySupport implements QuantifierTheorySupport {
 
@@ -67,18 +68,26 @@ final class HeapArrayTheorySupport implements QuantifierTheorySupport {
     }
 
     /**
-     * Provides the heap-generalized array read triggers, one per array dimension of the read.
+     * Provides the heap-generalized variant of an accepted trigger, see {@link #freeHeaps}, and
+     * the inner reads of a multi-dimensional array access as triggers of their own.
      *
      * @param term an accepted trigger term
      * @param clauseVariables the quantified variables of the clause the trigger belongs to
      * @param services access to the heap theory operators and term construction
-     * @return the generalized read triggers, possibly empty
+     * @param metavariableFactory supplies the metavariables that stand for the heaps
+     * @return the generalized triggers, empty if the term contains no read
      */
     @Override
     public List<JTerm> provideTriggers(JTerm term,
             ImmutableSet<QuantifiableVariable> clauseVariables, Services services,
             MetavariableFactory metavariableFactory) {
-        return dimensionVariants(term, clauseVariables, services, metavariableFactory);
+        final List<JTerm> variants = new ArrayList<>();
+        final JTerm generalized =
+            freeHeaps(term, false, clauseVariables, variants, services, metavariableFactory);
+        if (generalized != term) {
+            variants.add(generalized);
+        }
+        return variants;
     }
 
     /**
@@ -132,74 +141,80 @@ final class HeapArrayTheorySupport implements QuantifierTheorySupport {
     }
 
     /**
-     * The generalized triggers for an array read, one per array dimension it goes through. This
-     * is the single generalization path: for a one-dimensional read it yields one trigger, for a
-     * read through a multi-dimensional array one per level.
+     * Rebuilds a term with the heap of every read that carries a clause variable replaced by a
+     * fresh metavariable.
      *
-     * Two things must be generalized. The heap, because after simplification the read occurs over
-     * the many heaps of a proof (store chains of symbolic execution, an anonymized loop heap),
-     * not only the one written in the formula; a fresh metavariable per level stands for any heap.
-     * And the select sorts, because a formula may read {@code x[i][i_1]} with sorts of its own
-     * choice (a nonNull specification types the final read as plain Object), while the ground reads
-     * in a sequent are built with the component sorts of {@code x}'s array type, one per dimension.
-     * A trigger carrying the formula's sorts never matches: parametric selects of different sorts
-     * are different functions.
+     * Such a read binds the variable to what stands at the variable's position in a read of the
+     * same location, and the heap the location is read over does not discriminate: after a
+     * method call or a loop the location is read over an anonymized heap, after an assignment
+     * over a store, and the quantified formula names one of them. A read whose heap is a
+     * metavariable matches the read over any heap. Every such read gets a metavariable of its
+     * own, so the reads of one trigger match over different heaps.
      *
-     * For a select chain over an array-sorted base this method therefore rebuilds the access path
-     * once per depth, with the component sort of the base's array type at that depth and a fresh
-     * metavariable per level: for {@code x[i][i_1]} the triggers {@code select(H0, x, arr(i))}
-     * and {@code select(H1, select(H0, x, arr(i)), arr(i_1))}, whose metavariables {@code H0} and
-     * {@code H1} each stand for any heap, and each carrying the sorts a ground read of that depth
-     * actually has. Prefixes that bind only part of the clause variables enter the multi-trigger
-     * pool as usual.
+     * A read without a clause variable keeps its heap. It is part of the value the trigger
+     * names, and a freed heap would only widen the match to values over other heaps: a guard
+     * {@code x < p + result[1]} would then match sums with any read of {@code result[1]},
+     * binding {@code x} to terms that prove nothing. A read whose heap contains a quantified
+     * variable is left as it is.
      *
-     * @param term an accepted array read trigger
+     * An array read is rebuilt with the component sort of its array. A formula may read
+     * {@code x[i][i_1]} with sorts of its own choice (a nonNull specification types the final
+     * read as plain Object), while the ground reads of a sequent carry the component sorts of
+     * {@code x}'s array type, and parametric selects of different sorts are different
+     * functions. The inner read of {@code x[i][i_1]} is added to {@code innerReads} if it
+     * carries a clause variable: it is a trigger of its own and enters the multi-trigger pool
+     * where it binds only part of the clause's variables.
+     *
+     * @param term the term to rebuild
+     * @param arrayOfRead whether the term is the array argument of an enclosing array read
      * @param clauseVariables the quantified variables of the clause the trigger belongs to
+     * @param innerReads receives the rebuilt array reads that are the array of an enclosing read
      * @param services access to the heap theory operators and term construction
-     * @return one generalized read trigger per array dimension, possibly empty
+     * @param metavariableFactory supplies the metavariables that stand for the heaps
+     * @return the rebuilt term, or {@code term} itself if it contains no read to free
      */
-    private List<JTerm> dimensionVariants(JTerm term,
-            ImmutableSet<QuantifiableVariable> clauseVariables, Services services,
-            MetavariableFactory metavariableFactory) {
+    private JTerm freeHeaps(JTerm term, boolean arrayOfRead,
+            ImmutableSet<QuantifiableVariable> clauseVariables, List<JTerm> innerReads,
+            Services services, MetavariableFactory metavariableFactory) {
+        if (TriggerUtils.intersect(term.freeVars(), clauseVariables).isEmpty()) {
+            return term;
+        }
         final HeapLDT heapLDT = services.getTypeConverter().getHeapLDT();
         final TermBuilder tb = services.getTermBuilder();
-        final List<JTerm> variants = new ArrayList<>();
-        // decompose the select chain: walk through the object position collecting the arr
-        // array indices, innermost first
-        final List<JTerm> arrayIndices = new ArrayList<>();
-        JTerm base = term;
-        while (heapLDT.isSelectOp(base.op()) && base.sub(2).op() == heapLDT.getArr()) {
-            arrayIndices.add(0, base.sub(2).sub(0));
-            base = base.sub(1);
+        if (heapLDT.isSelectOp(term.op()) && term.sub(0).freeVars().isEmpty()) {
+            final JTerm field = freeHeaps(term.sub(2), false, clauseVariables, innerReads,
+                services, metavariableFactory);
+            final boolean arrayRead = field.op() == heapLDT.getArr();
+            final JTerm object = freeHeaps(term.sub(1), arrayRead, clauseVariables, innerReads,
+                services, metavariableFactory);
+            final JTerm heap = tb.var(metavariableFactory.fresh(heapLDT.targetSort()));
+            final JTerm read = arrayRead && object.sort() instanceof ArraySort arraySort
+                    ? tb.select(arraySort.elementSort(), heap, object, field)
+                    : services.getTermFactory().createTerm(term.op(), heap, object, field);
+            if (arrayOfRead && arrayRead
+                    && !TriggerUtils.intersect(read.freeVars(), clauseVariables).isEmpty()) {
+                innerReads.add(read);
+            }
+            return read;
         }
-        if (arrayIndices.isEmpty() || !(base.sort() instanceof ArraySort)) {
-            return variants;
-        }
-        boolean anyVar = false;
-        for (final JTerm c : arrayIndices) {
-            if (!TriggerUtils.intersect(c.freeVars(), clauseVariables).isEmpty()) {
-                anyVar = true;
+        JTerm[] subs = null;
+        for (int i = 0; i < term.arity(); i++) {
+            final JTerm sub = freeHeaps(term.sub(i), false, clauseVariables, innerReads,
+                services, metavariableFactory);
+            if (sub != term.sub(i)) {
+                if (subs == null) {
+                    subs = new JTerm[term.arity()];
+                    for (int j = 0; j < term.arity(); j++) {
+                        subs[j] = term.sub(j);
+                    }
+                }
+                subs[i] = sub;
             }
         }
-        if (!anyVar) {
-            return variants;
+        if (subs == null) {
+            return term;
         }
-        // rebuild the path bottom-up with the array's component sorts
-        Sort sort = base.sort();
-        JTerm read = base;
-        for (int depth = 0; depth < arrayIndices.size(); depth++) {
-            if (!(sort instanceof ArraySort arraySort)) {
-                break;
-            }
-            sort = arraySort.elementSort();
-            final JTerm heapVar = tb.var(metavariableFactory.fresh(heapLDT.targetSort()));
-            final JTerm arrField = tb.func(heapLDT.getArr(), arrayIndices.get(depth));
-            read = tb.select(sort, heapVar, read, arrField);
-            if (!TriggerUtils.intersect(read.freeVars(), clauseVariables).isEmpty()
-                    && !read.equals(term)) {
-                variants.add(read);
-            }
-        }
-        return variants;
+        return services.getTermFactory().createTerm(term.op(), new ImmutableArray<>(subs),
+            term.boundVars(), null);
     }
 }

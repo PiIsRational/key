@@ -175,12 +175,15 @@ class BasicMatching {
      * Last resort when the structures disagree: ask the theories to solve the pattern for one of
      * its variables. An array index written against an offset never matches an absolute one, so
      * without this a fact about {@code base + t} cannot be used on a term about {@code x}.
+     *
+     * A pattern that holds a metavariable is not solved: the solution is built from the
+     * pattern's other parts, and an instance is a term of the proof, which a metavariable is not.
      */
     private static Bindings solveByTheory(Bindings bindings, Term pattern, Term instance,
             Services services) {
         // No services means the caller asked to compare the structures alone.
         if (services == null || !(pattern instanceof JTerm patternTerm)
-                || !(instance instanceof JTerm instanceTerm)) {
+                || !(instance instanceof JTerm instanceTerm) || containsMetavariable(pattern)) {
             return null;
         }
         for (TheoryReasoning support : services.getProfile().getTheorySupports(false)) {
@@ -193,6 +196,15 @@ class BasicMatching {
         return null;
     }
 
-
-
+    private static boolean containsMetavariable(Term term) {
+        if (term.op() instanceof Metavariable) {
+            return true;
+        }
+        for (int i = 0; i < term.arity(); i++) {
+            if (containsMetavariable(term.sub(i))) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
