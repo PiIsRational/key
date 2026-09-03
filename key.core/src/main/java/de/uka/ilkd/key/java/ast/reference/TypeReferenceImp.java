@@ -80,7 +80,6 @@ public abstract class TypeReferenceImp extends JavaNonTerminalProgramElement
         this.prefix = prefix;
     }
 
-    @Override
     public SourceElement getFirstElement() {
         return (prefix == null) ? name : prefix.getFirstElement();
     }
@@ -95,7 +94,6 @@ public abstract class TypeReferenceImp extends JavaNonTerminalProgramElement
      *
      * @return an int giving the number of children of this node
      */
-    @Override
     public int getChildCount() {
         int result = 0;
         if (prefix != null) {
@@ -116,7 +114,6 @@ public abstract class TypeReferenceImp extends JavaNonTerminalProgramElement
      * @exception ArrayIndexOutOfBoundsException
      *            if <tt>index</tt> is out of bounds
      */
-    @Override
     public ProgramElement getChildAt(int index) {
         if (prefix != null) {
             if (index == 0) {
@@ -142,7 +139,6 @@ public abstract class TypeReferenceImp extends JavaNonTerminalProgramElement
      *
      * @return the number of type references.
      */
-    @Override
     public int getTypeReferenceCount() {
         return (prefix instanceof TypeReference) ? 1 : 0;
     }
@@ -157,7 +153,6 @@ public abstract class TypeReferenceImp extends JavaNonTerminalProgramElement
      *
      * @exception ArrayIndexOutOfBoundsException if <tt>index</tt> is out of bounds.
      */
-    @Override
     public TypeReference getTypeReferenceAt(int index) {
         if (prefix instanceof TypeReference && index == 0) {
             return (TypeReference) prefix;
@@ -170,7 +165,6 @@ public abstract class TypeReferenceImp extends JavaNonTerminalProgramElement
      *
      * @return the number of expressions.
      */
-    @Override
     public int getExpressionCount() {
         return (prefix instanceof Expression) ? 1 : 0;
     }
@@ -184,7 +178,6 @@ public abstract class TypeReferenceImp extends JavaNonTerminalProgramElement
      *
      * @exception ArrayIndexOutOfBoundsException if <tt>index</tt> is out of bounds.
      */
-    @Override
     public Expression getExpressionAt(int index) {
         if (prefix instanceof Expression && index == 0) {
             return (Expression) prefix;
@@ -197,7 +190,6 @@ public abstract class TypeReferenceImp extends JavaNonTerminalProgramElement
      *
      * @return the reference prefix.
      */
-    @Override
     public ReferencePrefix getReferencePrefix() {
         return prefix;
     }
@@ -207,7 +199,6 @@ public abstract class TypeReferenceImp extends JavaNonTerminalProgramElement
      *
      * @return the package reference.
      */
-    @Override
     public PackageReference getPackageReference() {
         return (prefix instanceof PackageReference) ? (PackageReference) prefix : null;
     }
@@ -217,7 +208,6 @@ public abstract class TypeReferenceImp extends JavaNonTerminalProgramElement
      *
      * @return the int value.
      */
-    @Override
     public int getDimensions() {
         return dimensions;
     }
@@ -227,12 +217,10 @@ public abstract class TypeReferenceImp extends JavaNonTerminalProgramElement
      *
      * @return the string.
      */
-    @Override
     public final String getName() {
         return (name == null) ? null : name.toString();
     }
 
-    @Override
     public abstract KeYJavaType getKeYJavaType();
 
     /**
@@ -240,7 +228,6 @@ public abstract class TypeReferenceImp extends JavaNonTerminalProgramElement
      *
      * @return the identifier.
      */
-    @Override
     public ProgramElementName getProgramElementName() {
         return name;
     }
@@ -252,28 +239,18 @@ public abstract class TypeReferenceImp extends JavaNonTerminalProgramElement
      * @param v
      *        the Visitor
      */
-    @Override
     public void visit(Visitor v) {
         v.performActionOnTypeReference(this);
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == this)
-            return true;
-        if (obj instanceof TypeReference tr) {
-            return tr.getDimensions() == getDimensions()
-                    && tr.getAnnotations().equals(getAnnotations());
-        }
-
-        return false;
-    }
-
-    @Override
     public MatchConditions match(SourceData source, MatchConditions matchCond) {
         final ProgramElement pe = source.getSource();
-        if (!equals(pe))
+
+        if (pe instanceof TypeReference tr
+                && tr.getDimensions() == getDimensions()
+                && tr.getAnnotations().equals(getAnnotations())) {
             return null;
+        }
 
         return super.match(source, matchCond);
     }

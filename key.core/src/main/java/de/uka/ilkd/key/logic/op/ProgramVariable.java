@@ -75,10 +75,12 @@ public abstract class ProgramVariable extends JAbstractSortedOperator
         this(name, s, t, containingType, isStatic, isModel, isGhost, false);
     }
 
+
     /** @return name of the ProgramVariable */
     public ProgramElementName getProgramElementName() {
         return (ProgramElementName) name();
     }
+
 
     /**
      * returns true iff the program variable has been declared as static
@@ -86,6 +88,7 @@ public abstract class ProgramVariable extends JAbstractSortedOperator
     public boolean isStatic() {
         return isStatic;
     }
+
 
     /**
      * returns true iff the program variable has been declared as model
@@ -101,12 +104,14 @@ public abstract class ProgramVariable extends JAbstractSortedOperator
         return isGhost;
     }
 
+
     /**
      * returns true iff the program variable has been declared as final
      */
     public boolean isFinal() {
         return isFinal;
     }
+
 
     /**
      * returns true iff the program variable is a member
@@ -115,6 +120,7 @@ public abstract class ProgramVariable extends JAbstractSortedOperator
         return containingType != null;
     }
 
+
     /**
      * returns the KeYJavaType where the program variable is declared or null if the program
      * variable denotes not a field
@@ -122,6 +128,7 @@ public abstract class ProgramVariable extends JAbstractSortedOperator
     public KeYJavaType getContainerType() {
         return containingType;
     }
+
 
     @Override
     public SourceElement getFirstElement() {
@@ -138,15 +145,18 @@ public abstract class ProgramVariable extends JAbstractSortedOperator
         return this;
     }
 
+
     @Override
     public Comment[] getComments() {
         return new Comment[0];
     }
 
+
     @Override
     public void visit(Visitor v) {
         v.performActionOnProgramVariable(this);
     }
+
 
     @Override
     public Position getStartPosition() {
@@ -175,6 +185,7 @@ public abstract class ProgramVariable extends JAbstractSortedOperator
         return type != null ? type.getKeYJavaType() : null;
     }
 
+
     @Override
     public KeYJavaType getKeYJavaType(Services javaServ) {
         return getKeYJavaType();
@@ -198,6 +209,7 @@ public abstract class ProgramVariable extends JAbstractSortedOperator
             return this;
         }
     }
+
 
     public String proofToString() {
         final Type javaType = getKeYJavaType().getJavaType();

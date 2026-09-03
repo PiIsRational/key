@@ -26,8 +26,9 @@ public abstract class Annotation extends JavaNonTerminalProgramElement {
     public boolean equals(Object o) {
         if (this == o)
             return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-        return ((Annotation) o).type.equals(type) && super.equals(o);
+
+        return o instanceof Annotation annot
+                ? annot.type.equals(type) && super.equals(type)
+                : false;
     }
 }

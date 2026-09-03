@@ -15,10 +15,10 @@ import de.uka.ilkd.key.java.ast.StatementBlock;
 import de.uka.ilkd.key.java.ast.abstraction.KeYJavaType;
 import de.uka.ilkd.key.java.ast.expression.literal.*;
 import de.uka.ilkd.key.java.ast.expression.literal.BooleanLiteral;
-import de.uka.ilkd.key.java.ast.reference.TypeRef;
-import de.uka.ilkd.key.java.ast.reference.TypeReference;
 import de.uka.ilkd.key.java.ast.expression.operator.BinaryOperator;
 import de.uka.ilkd.key.java.ast.expression.operator.BinaryOperatorKind;
+import de.uka.ilkd.key.java.ast.reference.TypeRef;
+import de.uka.ilkd.key.java.ast.reference.TypeReference;
 import de.uka.ilkd.key.java.ast.statement.*;
 import de.uka.ilkd.key.java.ast.statement.Catch;
 import de.uka.ilkd.key.java.ast.statement.LabeledStatement;
@@ -294,7 +294,7 @@ public final class AuxiliaryContractBuilders {
         private Statement wrapInTryCatch(final Statement labeledBlock,
                 final ProgramVariable exceptionParameter) {
             Catch katch = KeYJavaASTFactory.catchClause(
-                KeYJavaASTFactory.parameterDeclaration(services.getJavaInfo(),
+                KeYJavaASTFactory.parameterDeclaration(
                     exceptionParameter.getTypeReference(), exceptionParameter),
                 new StatementBlock(
                     KeYJavaASTFactory.assign(variables.exception, exceptionParameter)));

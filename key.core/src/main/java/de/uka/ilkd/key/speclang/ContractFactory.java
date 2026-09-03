@@ -362,7 +362,6 @@ public class ContractFactory {
             ImmutableList<LocationVariable> paramVars, LocationVariable resultVar,
             LocationVariable excVar, Map<LocationVariable, LocationVariable> atPreVars,
             boolean toBeSaved) {
-
         return new FunctionalOperationContractImpl(baseName, null, kjt, pm, pm.getContainerType(),
             modalityKind, pres, freePres, mby, posts, freePosts, axioms, modifiables,
             freeModifiables, accs,
@@ -441,7 +440,6 @@ public class ContractFactory {
             Map<LocationVariable, Boolean> hasModifiable,
             Map<LocationVariable, Boolean> hasFreeModifiable,
             ProgramVariableCollection progVars, boolean toBeSaved, boolean transaction) {
-
         return new FunctionalOperationContractImpl(baseName, null, pm.getContainerType(), pm,
             pm.getContainerType(), modalityKind, pres, freePres, mby, posts, freePosts, axioms,
             modifiables,

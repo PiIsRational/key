@@ -72,9 +72,4 @@ public class MatchTermLabelInstruction implements MatchInstruction {
         return result;
     }
 
-    @Override
-    public String toString() {
-        return "MatchTermLabelInstruction";
-    }
-
 }

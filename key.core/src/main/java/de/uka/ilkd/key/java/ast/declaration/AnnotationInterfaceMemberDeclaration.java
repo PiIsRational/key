@@ -56,7 +56,6 @@ public class AnnotationInterfaceMemberDeclaration extends JavaDeclaration
         if (typeRef != null) {
             if (index == 0)
                 return typeRef;
-            index--;
         }
         throw new ArrayIndexOutOfBoundsException();
     }

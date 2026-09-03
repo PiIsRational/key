@@ -26,6 +26,7 @@ public class TypeOf extends ProgramTransformer {
      */
     public TypeOf(ProgramElement pe) {
         super("#typeof", pe);
+
     }
 
     @Override

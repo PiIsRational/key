@@ -692,8 +692,8 @@ public class PrettyPrinter implements Visitor {
             AnnotationInterfaceMemberDeclaration x) {
         layouter.beginI();
         ImmutableArray<Modifier> mods = x.getModifiers();
-        boolean hasMods = mods != null && !mods.isEmpty();
-        if (hasMods) {
+
+        if (mods != null && !mods.isEmpty()) {
             writeKeywordList(mods);
             layouter.print(" ");
         }
@@ -1311,7 +1311,6 @@ public class PrettyPrinter implements Visitor {
         if (addParentheses) {
             layouter.print("(");
         }
-
         layouter.print("new ");
 
         x.getTypeReference().visit(this);

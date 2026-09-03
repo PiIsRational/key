@@ -26,6 +26,7 @@ public final class ProgramConstant extends ProgramVariable {
         this.compileTimeConstant = compileTimeConstant;
     }
 
+
     /**
      * @return the value of the initializer as a literal, if this variable is a compile-time
      *         constant, </code>null</code> otherwise
@@ -33,6 +34,7 @@ public final class ProgramConstant extends ProgramVariable {
     public Literal getCompileTimeConstant() {
         return compileTimeConstant;
     }
+
 
     @Override
     public void visit(Visitor v) {

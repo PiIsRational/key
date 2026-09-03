@@ -22,7 +22,8 @@ import org.key_project.logic.op.sv.SchemaVariable;
  *
  * @author <TT>AutoDoc</TT>
  */
-public class SchematicFieldReference extends FieldReference {
+public class SchematicFieldReference extends FieldReference
+        implements MemberReference, ReferenceSuffix, TypeReferenceContainer, ExpressionContainer {
 
     private static final ProgramVariable SCHEMA_VARIABLE =
         new LocationVariable(new ProgramElementName("SCHEMA_VARIABLE_IGNORE"), JavaDLTheory.ANY);
@@ -94,6 +95,7 @@ public class SchematicFieldReference extends FieldReference {
         return (ProgramSV) schemaVariable;
     }
 
+
     /**
      * Set reference prefix.
      *
@@ -102,6 +104,7 @@ public class SchematicFieldReference extends FieldReference {
     public ReferencePrefix setReferencePrefix(ReferencePrefix rp) {
         return new SchematicFieldReference(schemaVariable, rp);
     }
+
 
     /**
      * Return the type reference at the specified index in this node's "virtual" type reference
@@ -160,6 +163,7 @@ public class SchematicFieldReference extends FieldReference {
     public void visit(Visitor v) {
         v.performActionOnSchematicFieldReference(this);
     }
+
 
     public MatchConditions match(SourceData source, MatchConditions matchCond) {
         ProgramElement src = source.getSource();

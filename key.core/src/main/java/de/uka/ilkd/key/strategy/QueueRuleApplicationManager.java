@@ -30,8 +30,6 @@ import org.key_project.util.collection.ImmutableList;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of {@link RuleApplicationManager} that stores possible {@link RuleApp}s
@@ -80,8 +78,6 @@ import org.slf4j.LoggerFactory;
  */
 @NullMarked
 public class QueueRuleApplicationManager implements RuleApplicationManager<Goal> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(QueueRuleApplicationManager.class);
-
     public static final AtomicLong PERF_QUEUE_OPS = new AtomicLong();
     public static final AtomicLong PERF_PEEK = new AtomicLong();
     public static final AtomicLong PERF_CREATE_CONTAINER = new AtomicLong();

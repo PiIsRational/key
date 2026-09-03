@@ -24,8 +24,6 @@ import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.logic.sort.Sort;
 import org.key_project.util.collection.ImmutableList;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This variable condition can be used to check if the {@link TypeReference} of a
@@ -34,8 +32,6 @@ import org.slf4j.LoggerFactory;
  * @author Daniel Grévent
  */
 public final class HasAnnotationCondition extends VariableConditionAdapter {
-    private static final Logger LOGGER = LoggerFactory.getLogger(HasAnnotationCondition.class);
-
     private static final Sort[] ALLOWED = {
         ProgramSVSort.SIMPLE_NEW,
         ProgramSVSort.LOCALVARIABLE, ProgramSVSort.VARIABLE,

@@ -74,6 +74,7 @@ import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclar
 import com.github.javaparser.resolution.declarations.ResolvedValueDeclaration;
 import com.github.javaparser.resolution.model.typesystem.ReferenceTypeImpl;
 import com.github.javaparser.resolution.types.ResolvedType;
+import com.github.javaparser.resolution.types.ResolvedVoidType;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserFieldDeclaration;
 import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserVariableDeclaration;
@@ -1500,11 +1501,11 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
             final Literal compileTimeConstant = getCompileTimeConstantInitializer(decl);
 
             if (compileTimeConstant == null) {
-                pv = new LocationVariable(pen, accept(t),
+                pv = new LocationVariable(pen, requireTypeReference(t),
                     getKeYJavaType(refType), decl.isStatic, decl.isModel,
                     decl.isGhost, decl.isFinal);
             } else {
-                pv = new ProgramConstant(pen, accept(t),
+                pv = new ProgramConstant(pen, requireTypeReference(t),
                     getKeYJavaType(refType), decl.isStatic,
                     compileTimeConstant);
             }
@@ -1529,7 +1530,7 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
         PositionInfo pi = createPositionInfo(v.decl);
         List<Comment> c = createComments(v.decl);
         Expression init = accepto(v.decl.getInitializer());
-        KeYJavaType type = requireTypeReference(v.decl.getType()).getKeYJavaType();
+        KeYJavaType type = getKeYJavaType(v.decl.getType().resolve());
         ProgramVariable pv = getProgramVariableForFieldSpecification(v);
         return new FieldSpecification(pi, c, init, pv, 0, type);
     }
@@ -1543,7 +1544,7 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
     @Override
     public Object visit(VoidType n, Void arg) {
         ImmutableArray<Annotation> annots = map(n.annotations());
-        return new TypeRef(getKeYJavaType(n.resolve()), annots.toImmutableList(), 0);
+        return new TypeRef(getKeYJavaType(ResolvedVoidType.INSTANCE), annots.toImmutableList(), 0);
     }
 
     @Override
@@ -1575,7 +1576,8 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
             // TODO: is the lookup correct? Seems to work in small examples ...
             String typename = n.getName().asString();
             KeYJavaType kjt = typeConverter.getKeYJavaType(typename);
-            return new Import(new TypeRef(kjt), n.isAsterisk(), pi, c);
+            TypeReference typeRef = new TypeRef(kjt);
+            return new Import(typeRef, n.isAsterisk(), pi, c);
         }
     }
 
@@ -2038,10 +2040,10 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
     @Override
     public Object visit(AnnotationDeclaration n, Void arg) {
         final var ref = new ReferenceTypeImpl(n.resolve());
-        var kjt = createOrCachedKeyJavaType(ref);
+        KeYJavaType kjt = createOrCachedKeyJavaType(ref);
 
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         ProgramElementName name = createProgramElementName(n.getName());
         ProgramElementName fullName = new ProgramElementName(n.getFullyQualifiedName().get());
         boolean isLibrary = mapping.isParsingLibraries();
@@ -2053,6 +2055,7 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
         TypeDeclaration td = new AnnotationInterfaceDeclaration(
             pi, c, modArray, name, fullName, members,
             parentIsInterface, isLibrary, getClassSpec(n));
+
         kjt.setJavaType(td);
         mapping.registerType(ref, kjt);
         return addToMapping(n, td);
@@ -2060,7 +2063,7 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(AnnotationMemberDeclaration n, Void arg) {
-        var existing = mapping.nodeToKeY(n);
+        ProgramElement existing = mapping.nodeToKeY(n);
         if (existing != null) {
             return existing;
         }

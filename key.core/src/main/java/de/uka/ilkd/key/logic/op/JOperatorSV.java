@@ -4,9 +4,11 @@
 package de.uka.ilkd.key.logic.op;
 
 import org.key_project.logic.Name;
+import org.key_project.logic.Named;
 import org.key_project.logic.Term;
 import org.key_project.logic.TermCreationException;
 import org.key_project.logic.op.sv.OperatorSV;
+import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.logic.sort.Sort;
 import org.key_project.util.collection.ImmutableArray;
 
@@ -14,7 +16,7 @@ import org.key_project.util.collection.ImmutableArray;
  * Abstract base class for schema variables.
  */
 public abstract class JOperatorSV extends JAbstractSortedOperator
-        implements OperatorSV {
+        implements OperatorSV, SchemaVariable, Named {
 
     private final boolean isStrict;
 

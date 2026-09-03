@@ -25,8 +25,6 @@ import org.key_project.prover.rules.instantiation.MatchResultInfo;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 /**
@@ -36,7 +34,6 @@ import org.slf4j.LoggerFactory;
  * @author Daniel Grévent
  */
 public final class AddAnnotation implements VariableCondition {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AddAnnotation.class);
     private static final Sort[] ALLOWED = {
         ProgramSVSort.SIMPLE_NEW,
         ProgramSVSort.LOCALVARIABLE, ProgramSVSort.VARIABLE

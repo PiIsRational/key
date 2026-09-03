@@ -4,6 +4,8 @@
 package de.uka.ilkd.key.java.ast.reference;
 
 import de.uka.ilkd.key.java.ast.Annotation;
+import de.uka.ilkd.key.java.ast.NonTerminalProgramElement;
+import de.uka.ilkd.key.java.ast.SourceElement;
 import de.uka.ilkd.key.java.ast.abstraction.KeYJavaType;
 import de.uka.ilkd.key.logic.ProgramElementName;
 
@@ -17,7 +19,7 @@ import org.key_project.util.collection.ImmutableList;
  * {@link TypeReferenceContainer}.
  */
 public interface TypeReference extends TypeReferenceInfix, TypeReferenceContainer,
-        PackageReferenceContainer, MemberReference {
+        PackageReferenceContainer, MemberReference, NonTerminalProgramElement, SourceElement {
 
     String getName();
 

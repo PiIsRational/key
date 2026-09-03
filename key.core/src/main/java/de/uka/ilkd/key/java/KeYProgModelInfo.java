@@ -187,11 +187,7 @@ public class KeYProgModelInfo {
                 var node = (NodeWithModifiers<?>) td.asClass().toAst().get();
                 return node.hasModifier(Modifier.DefaultKeyword.FINAL);
             }
-            if (td.isInterface()) {
-                // Interfaces can't be final
-                return false;
-            }
-            if (td.isAnnotation()) {
+            if (td.isInterface() || td.isAnnotation()) {
                 // Interfaces can't be final
                 return false;
             }

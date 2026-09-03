@@ -234,7 +234,7 @@ public class WhileInvariantTransformation extends WhileLoopTransformation {
                 KeYJavaASTFactory.assign(thrownExc, excParam) };
 
             Catch ctch =
-                KeYJavaASTFactory.catchClause(KeYJavaASTFactory.parameterDeclaration(javaInfo,
+                KeYJavaASTFactory.catchClause(KeYJavaASTFactory.parameterDeclaration(
                     new TypeRef(javaInfo.getKeYJavaType("java.lang.Throwable")), excParam),
                     catchStatements);
 
@@ -299,7 +299,7 @@ public class WhileInvariantTransformation extends WhileLoopTransformation {
                 KeYJavaASTFactory.assign(thrownExc, excParam) };
 
             Catch ctch =
-                KeYJavaASTFactory.catchClause(KeYJavaASTFactory.parameterDeclaration(javaInfo,
+                KeYJavaASTFactory.catchClause(KeYJavaASTFactory.parameterDeclaration(
                     new TypeRef(javaInfo.getKeYJavaType("java.lang.Throwable")), excParam),
                     catchStatements);
 

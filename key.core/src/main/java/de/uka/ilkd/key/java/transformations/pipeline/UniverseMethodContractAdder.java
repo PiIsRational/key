@@ -20,15 +20,18 @@ import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.type.Type;
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static de.uka.ilkd.key.speclang.jml.pretranslation.TextualJMLSpecCase.ClauseHd.ACCESSIBLE;
 import static de.uka.ilkd.key.speclang.jml.pretranslation.TextualJMLSpecCase.ClauseHd.ASSIGNABLE_FREE;
 
+/**
+ * This transformation reads the ownership annotations on methods, method arguements and return
+ * types
+ * and adds clauses to the method contract that correspond to them.
+ *
+ * @author Daniel Grévent
+ */
 public class UniverseMethodContractAdder extends JavaTransformerAbstract {
-    public final static Logger LOGGER = LoggerFactory.getLogger(UniverseMethodContractAdder.class);
-
     public final static String[] OWNERSHIP = new String[] { "Rep", "Peer", "Dom" };
     public final static String[] REPONLY = new String[] { "RepOnly" };
 
@@ -88,6 +91,7 @@ public class UniverseMethodContractAdder extends JavaTransformerAbstract {
                     AnnotationExpr annot = filterAnnots(param.annotations(), OWNERSHIP);
                     if (annot == null)
                         continue;
+
                     sc.addClause(ClauseHd.REQUIRES_FREE,
                         getOwnershipContext(param.getNameAsString(), annot));
                 }
@@ -109,6 +113,7 @@ public class UniverseMethodContractAdder extends JavaTransformerAbstract {
     private static AnnotationExpr filterAnnots(NodeList<AnnotationExpr> annots, String[] allowed) {
         if (annots == null)
             return null;
+
         return annots.stream()
                 .filter(annot -> Arrays.stream(allowed)
                         .anyMatch(val -> annot.getName().toString().equals(val)))

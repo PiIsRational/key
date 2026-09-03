@@ -42,8 +42,6 @@ import org.key_project.util.collection.ImmutableSet;
 
 import com.github.javaparser.ast.key.KeyTransactionStatement;
 import org.jspecify.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static de.uka.ilkd.key.java.ast.expression.BinaryAssignment.BinaryAssignmentKind.COPY;
 
@@ -84,7 +82,6 @@ import static de.uka.ilkd.key.java.ast.expression.BinaryAssignment.BinaryAssignm
  * @author Martin Hentschel
  */
 public abstract class AbstractOperationPO extends AbstractPO {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractOperationPO.class);
     private static final String JAVA_LANG_THROWABLE = "java.lang.Throwable";
 
     protected InitConfig proofConfig;

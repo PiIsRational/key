@@ -9,8 +9,8 @@ import java.util.function.UnaryOperator;
 
 import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.java.ast.abstraction.KeYJavaType;
-import de.uka.ilkd.key.java.ast.reference.TypeRef;
 import de.uka.ilkd.key.java.ast.declaration.ModifierKind;
+import de.uka.ilkd.key.java.ast.reference.TypeRef;
 import de.uka.ilkd.key.ldt.HeapLDT;
 import de.uka.ilkd.key.logic.JTerm;
 import de.uka.ilkd.key.logic.op.*;
@@ -76,6 +76,7 @@ public final class PartialInvAxiom extends ClassAxiom {
         return result;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (o == null || this.getClass() != o.getClass()) {
@@ -99,20 +100,24 @@ public final class PartialInvAxiom extends ClassAxiom {
         return inv.getName();
     }
 
+
     @Override
     public IObserverFunction getTarget() {
         return target;
     }
+
 
     @Override
     public KeYJavaType getKJT() {
         return inv.getKJT();
     }
 
+
     @Override
     public ModifierKind getVisibility() {
         return inv.getVisibility();
     }
+
 
     @Override
     public ImmutableSet<Taclet> getTaclets(ImmutableSet<Pair<Sort, IObserverFunction>> toLimit,
@@ -152,6 +157,7 @@ public final class PartialInvAxiom extends ClassAxiom {
         // return
         return result;
     }
+
 
     @Override
     public ImmutableSet<Pair<Sort, IObserverFunction>> getUsedObservers(Services services) {

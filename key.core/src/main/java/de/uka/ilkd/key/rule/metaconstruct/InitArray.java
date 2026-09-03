@@ -81,6 +81,7 @@ public abstract class InitArray extends ProgramTransformer {
             arrayType);
     }
 
+
     /**
      * The variable initializers have to be evaluated and assigned to temporary variables (the
      * initializers may itself be array initializers, in which case valid creation expressions are

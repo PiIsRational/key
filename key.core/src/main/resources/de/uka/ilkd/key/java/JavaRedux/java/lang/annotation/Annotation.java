@@ -5,9 +5,6 @@ package java.lang.annotation;
 
 public interface Annotation
 {
-    public int hashCode();
-
-    public String toString();
 
     public java.lang.Class annotationType();
 }

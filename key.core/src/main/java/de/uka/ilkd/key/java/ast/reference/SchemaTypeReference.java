@@ -33,7 +33,6 @@ public class SchemaTypeReference extends TypeReferenceImp implements AbstractPro
         fullName = sb.toString();
     }
 
-    @Override
     public KeYJavaType getKeYJavaType() {
         return null;
     }
@@ -45,12 +44,10 @@ public class SchemaTypeReference extends TypeReferenceImp implements AbstractPro
         return kjt;
     }
 
-    @Override
     public ProgramElement getConcreteProgramElement(Services services) {
         return new TypeRef(getKeYJavaType(services));
     }
 
-    @Override
     public MatchConditions match(SourceData source, MatchConditions matchCond) {
         ProgramElement t = source.getSource();
         if (t instanceof TypeReference) {
@@ -70,7 +67,6 @@ public class SchemaTypeReference extends TypeReferenceImp implements AbstractPro
      * @param v
      *        the Visitor
      */
-    @Override
     public void visit(Visitor v) {
         v.performActionOnAbstractProgramElement(this);
     }

@@ -22,7 +22,7 @@ public class TypeRef extends TypeReferenceImp {
     /**
      * creates a type reference for the given KeYJavaType with dimension 0 and creates a suitable
      * package reference prefix from the KeYJavaType. If this is not desired use the constructor
-     * TypeRef(ProgramElementName, ImmutableArray<AnnotationExpression>, int, ReferencePrefix,
+     * TypeRef(ProgramElementName, ImmutableList<AnnotationExpression>, int, ReferencePrefix,
      * KeYJavaType) and take null as last
      * argument.
      */
@@ -33,7 +33,7 @@ public class TypeRef extends TypeReferenceImp {
     /**
      * creates a type reference for the given KeYJavaType and the given dimension and creates a
      * suitable package reference prefix from the KeYJavaType. If this is not desired use the
-     * constructor TypeRef(ProgramElementName, ImmutableArray<AnnotationExpression>, int,
+     * constructor TypeRef(ProgramElementName, ImmutableList<AnnotationExpression>, int,
      * ReferencePrefix, KeYJavaType) and take null as
      * last argument.
      */

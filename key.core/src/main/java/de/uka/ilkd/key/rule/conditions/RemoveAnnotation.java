@@ -22,8 +22,6 @@ import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 /**
@@ -34,8 +32,6 @@ import org.slf4j.LoggerFactory;
  * @author Daniel Grévent
  */
 public final class RemoveAnnotation implements VariableCondition {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RemoveAnnotation.class);
-
     private static final Sort[] ALLOWED = { ProgramSVSort.SIMPLE_NEW };
 
     private final SchemaVariable read, store;

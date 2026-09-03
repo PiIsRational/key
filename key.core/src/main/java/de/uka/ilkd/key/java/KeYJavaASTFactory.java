@@ -188,9 +188,7 @@ public abstract class KeYJavaASTFactory {
     /**
      * create a parameter declaration
      */
-    public static ParameterDeclaration parameterDeclaration(JavaInfo javaInfo,
-            TypeReference typeRef,
-            String name) {
+    public static ParameterDeclaration parameterDeclaration(TypeReference typeRef, String name) {
         return new ParameterDeclaration(new Modifier[0], typeRef,
             new VariableSpecification(localVariable(name, typeRef)), false);
     }
@@ -202,13 +200,11 @@ public abstract class KeYJavaASTFactory {
      * kjt var
      * </pre>
      *
-     * @param javaInfo the Java model containing <code>kjt</code>
-     * @param kjt the static {@link KeYJavaType} of <code>var</code>
+     * @param typeRef the static {@link TypeReference} of <code>var</code>
      * @param var the named and typed {@link IProgramVariable} to be declared as parameter
      * @return a {@link ParameterDeclaration} of <code>var</code> with static type <code>kjt</code>
      */
-    public static ParameterDeclaration parameterDeclaration(JavaInfo javaInfo,
-            TypeReference typeRef,
+    public static ParameterDeclaration parameterDeclaration(TypeReference typeRef,
             IProgramVariable var) {
         return new ParameterDeclaration(new Modifier[0], typeRef,
             new VariableSpecification(var), false);
@@ -367,16 +363,15 @@ public abstract class KeYJavaASTFactory {
      *    body
      * </pre>
      *
-     * @param javaInfo the {@link JavaInfo} containing <code>kjt</code>
      * @param param the {@link String} name of the exception object variable
      * @param typeRef the {@link TypeReference} of the exception object variable
      * @param body the {@link StatementBlock} catch clause body
      * @return a new {@link Catch} with parameter <code>param</code> of static type <code>kjt</code>
      *         and body <code>body</code>
      */
-    public static Catch catchClause(JavaInfo javaInfo, String param, TypeReference typeRef,
+    public static Catch catchClause(String param, TypeReference typeRef,
             StatementBlock body) {
-        return new Catch(parameterDeclaration(javaInfo, typeRef, param), body);
+        return new Catch(parameterDeclaration(typeRef, param), body);
     }
 
     /**
@@ -397,7 +392,7 @@ public abstract class KeYJavaASTFactory {
      */
     public static Catch catchClause(JavaInfo javaInfo, String param, String type,
             StatementBlock body) {
-        return catchClause(javaInfo, param, new TypeRef(javaInfo.getKeYJavaType(type)), body);
+        return catchClause(param, new TypeRef(javaInfo.getKeYJavaType(type)), body);
     }
 
     /**
@@ -1321,6 +1316,7 @@ public abstract class KeYJavaASTFactory {
      * @return a new {@link LocalVariableDeclaration} as defined by <code>parameters</code>
      */
     public static LocalVariableDeclaration declare(final ExtList parameters) {
+
         return new LocalVariableDeclaration(parameters);
     }
 
@@ -1338,6 +1334,7 @@ public abstract class KeYJavaASTFactory {
      * @return a new {@link LocalVariableDeclaration} of <code>variable</code>
      */
     public static LocalVariableDeclaration declare(final IProgramVariable variable) {
+
         return declare(variable, (Expression) null);
     }
 
