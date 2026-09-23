@@ -57,7 +57,6 @@ public class KeYJavaPipeline {
         // Below is an expensive transformation as it has to traverse down
         // to an expression level.
         p.add(new ConstantStringExpressionEvaluator(pipelineServices));
-        p.add(new UniverseMethodContractAdder(pipelineServices));
         return p;
     }
 
