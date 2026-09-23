@@ -4,6 +4,7 @@
 package de.uka.ilkd.key.java.ast.reference;
 
 
+
 import java.util.Objects;
 
 import de.uka.ilkd.key.java.ast.Annotation;
@@ -42,6 +43,7 @@ public class TypeRef extends TypeReferenceImp {
         super(new ProgramElementName(kjt.getName()), annotations, dim, kjt.createPackagePrefix());
         this.kjt = kjt;
     }
+
 
     public TypeRef(ExtList children, KeYJavaType kjt, int dim) {
         super(children, dim);

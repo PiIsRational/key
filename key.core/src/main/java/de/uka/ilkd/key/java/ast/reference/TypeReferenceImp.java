@@ -25,6 +25,7 @@ import org.key_project.util.collection.ImmutableList;
 public abstract class TypeReferenceImp extends JavaNonTerminalProgramElement
         implements TypeReference {
 
+
     /**
      * Prefix.
      */
@@ -79,6 +80,7 @@ public abstract class TypeReferenceImp extends JavaNonTerminalProgramElement
         this.dimensions = dimension;
         this.prefix = prefix;
     }
+
 
     public SourceElement getFirstElement() {
         return (prefix == null) ? name : prefix.getFirstElement();
@@ -228,9 +230,11 @@ public abstract class TypeReferenceImp extends JavaNonTerminalProgramElement
      *
      * @return the identifier.
      */
+
     public ProgramElementName getProgramElementName() {
         return name;
     }
+
 
     /**
      * calls the corresponding method of a visitor in order to perform some action/transformation on
@@ -242,6 +246,7 @@ public abstract class TypeReferenceImp extends JavaNonTerminalProgramElement
     public void visit(Visitor v) {
         v.performActionOnTypeReference(this);
     }
+
 
     public MatchConditions match(SourceData source, MatchConditions matchCond) {
         final ProgramElement pe = source.getSource();

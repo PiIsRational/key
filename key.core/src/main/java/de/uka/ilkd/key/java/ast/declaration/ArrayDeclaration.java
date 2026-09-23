@@ -212,6 +212,7 @@ public class ArrayDeclaration extends TypeDeclaration implements ArrayType {
         return null;
     }
 
+
     public String getAlternativeNameRepresentation() {
         if (altNameRepresentation == null) {
             final StringBuilder alt = new StringBuilder();

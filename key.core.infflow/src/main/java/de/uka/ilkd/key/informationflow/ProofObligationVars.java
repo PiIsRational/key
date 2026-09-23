@@ -57,6 +57,7 @@ public class ProofObligationVars {
         this.postfix = "";
     }
 
+
     public ProofObligationVars(ProofObligationVars orig, String postfix, Services services) {
         this.pre = StateVars.buildInfFlowPreVars(orig.pre, postfix, services);
         this.post = StateVars.buildInfFlowPostVars(orig.pre, orig.post, pre, postfix, services);
@@ -65,6 +66,7 @@ public class ProofObligationVars {
         this.formalParams = orig.formalParams != null ? buildFormalParamVars(services) : null;
         this.postfix = postfix;
     }
+
 
     public ProofObligationVars(StateVars pre, StateVars post, JTerm exceptionParameter,
             ImmutableList<JTerm> formalParams, Services services) {
@@ -112,6 +114,7 @@ public class ProofObligationVars {
             return this;
         }
     }
+
 
     /**
      * Build variable for try statement.

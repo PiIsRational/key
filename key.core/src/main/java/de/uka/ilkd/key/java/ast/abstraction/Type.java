@@ -20,4 +20,5 @@ public interface Type extends ProgramModelElement {
      * @return the default value of the given type according to JLS Sect. 4.5.5
      */
     Literal getDefaultValue();
+
 }
