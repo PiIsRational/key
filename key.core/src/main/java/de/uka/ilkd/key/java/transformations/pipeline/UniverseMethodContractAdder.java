@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.java.transformations.pipeline;
 
 import java.util.Arrays;
@@ -25,9 +26,9 @@ import static de.uka.ilkd.key.speclang.jml.pretranslation.TextualJMLSpecCase.Cla
 import static de.uka.ilkd.key.speclang.jml.pretranslation.TextualJMLSpecCase.ClauseHd.ASSIGNABLE_FREE;
 
 /**
- * This transformation reads the ownership annotations on methods, method arguements and return
- * types
- * and adds clauses to the method contract that correspond to them.
+ * This transformation reads the ownership annotations on methods,
+ * method arguments and return types and adds clauses to the
+ * method contract that correspond to them.
  *
  * @author Daniel Grévent
  */

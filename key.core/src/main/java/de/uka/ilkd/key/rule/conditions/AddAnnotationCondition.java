@@ -36,11 +36,9 @@ import org.jspecify.annotations.Nullable;
  *
  * @author Daniel Grévent
  */
-public final class AddAnnotation implements VariableCondition {
+public final class AddAnnotationCondition implements VariableCondition {
     private static final Sort[] ALLOWED = {
-        ProgramSVSort.SIMPLE_NEW,
-        ProgramSVSort.LOCALVARIABLE, ProgramSVSort.VARIABLE
-    };
+        ProgramSVSort.SIMPLE_NEW, ProgramSVSort.VARIABLE };
 
     private final SchemaVariable read, store;
     private final String annot;
@@ -53,12 +51,12 @@ public final class AddAnnotation implements VariableCondition {
      * @param annot the fully qualified name of the {@link Annotation} to add.
      *
      * @throws IllegalArgumentException if <code>read</code> is not a `Variable`,
-     *         a `LocalVariable` or a `SimpleInstanceCreation` or the {@link Sort} of
-     *         <code>store</code> is not compatible with that of <code>read</code>, so
-     *         they do not correspond to the same kind of AST type.
+     *         or a `SimpleInstanceCreation` or the {@link Sort} of <code>store</code>
+     *         is not compatible with that of <code>read</code>, so they do not
+     *         correspond to the same kind of AST type.
      */
-    public AddAnnotation(SchemaVariable store, SchemaVariable read, String annot) {
-        if (!equivalent(store.sort(), read.sort())) {
+    public AddAnnotationCondition(SchemaVariable store, SchemaVariable read, String annot) {
+        if (store.sort() != read.sort()) {
             throw new IllegalArgumentException(
                 "Expected left and right to have an equivalent sort!");
         }
@@ -73,20 +71,6 @@ public final class AddAnnotation implements VariableCondition {
         this.read = read;
         this.store = store;
         this.annot = annot;
-    }
-
-    /**
-     * check that two sorts that are part of `ALLOWED` are correspond to a same
-     * underlying type
-     */
-    private static boolean equivalent(Sort a, Sort b) {
-        if (a == b)
-            return true;
-        if (a == ProgramSVSort.VARIABLE && b == ProgramSVSort.LOCALVARIABLE
-                || b == ProgramSVSort.VARIABLE && a == ProgramSVSort.LOCALVARIABLE)
-            return true;
-
-        return false;
     }
 
     @Override
